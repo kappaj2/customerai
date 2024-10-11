@@ -37,7 +37,7 @@ spring:
         model: mxbai-embed-large
       chat:
         options:
-          model: llama3
+          model: llama3.2
           temperature: 0.5
     vectorstore:
       pgvector:

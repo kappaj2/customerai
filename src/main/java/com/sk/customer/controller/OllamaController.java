@@ -2,6 +2,9 @@ package com.sk.customer.controller;
 
 import com.sk.customer.service.CustomerService;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
@@ -27,7 +30,11 @@ public class OllamaController {
      public OllamaController(ChatClient.Builder builder,
                              VectorStore vectorStore,
                              CustomerService customerService) {
-          this.chatClient = builder.build();
+          this.chatClient = builder
+                 // .defaultSystem("You are a serious engineer talking to a super nerd")
+                  .defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
+                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+                  .build();
           this.vectorStore = vectorStore;
           this.customerService = customerService;
      }
@@ -62,6 +69,15 @@ public class OllamaController {
 
           return chatClient.prompt()
                   .user("Please tell me a dad joke about dogs. Do not use the ruff one.")
+                  .call()
+                  .content();
+     }
+
+     @GetMapping("/ollama/question")
+     public String askQuestion(@RequestParam String question) {
+          String prompt = "Answer the following question: " + question;
+          return chatClient.prompt()
+                  .user(prompt)
                   .call()
                   .content();
      }
