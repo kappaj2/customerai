@@ -37,7 +37,7 @@ spring:
         model: mxbai-embed-large
       chat:
         options:
-          model: llama3.2
+          model: llava:7b # llama3.2
           temperature: 0.5
     vectorstore:
       pgvector:
@@ -55,6 +55,10 @@ application:
     timeout: 10000
     backoffRetry: 5
     backoffPeriod: 10000
+
+logging:
+  level:
+    com.sk.customer: DEBUG
 
 weather:
   api-key: ${WEATHER_API_KEY}

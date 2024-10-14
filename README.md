@@ -110,6 +110,15 @@ https://docs.spring.io/spring-ai/reference/api/vectordbs/pgvector.html
 ### Setting up Functions to be used by the LLM
 The first function will use the weather api to retrieve current weather information. This is a free service where we can get an api key to call it.
 
+### Advisors in Spring AI
+Spring AI has the concept of advisors. Advisors are used to provide additional information to the LLM.
+They are also used to transform the input and output of the LLM. One big use case is for sharing context accross
+multiple calls.
+<br>
+Below is a very good article on advisors:
+<br>
+[Advisor Implementation](https://spring.io/blog/2024/10/02/supercharging-your-ai-applications-with-spring-ai-advisors)
+
 ### Reference Documentation
 
 For further reference, please consider the following sections:
