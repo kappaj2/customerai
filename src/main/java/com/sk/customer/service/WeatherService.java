@@ -1,15 +1,14 @@
 package com.sk.customer.service;
 
 import com.sk.customer.dto.WeatherConfigProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.client.RestClient;
 
 import java.util.function.Function;
 
+@Slf4j
 public class WeatherService implements Function<WeatherService.Request, WeatherService.Response> {
 
-     private static final Logger log = LoggerFactory.getLogger(WeatherService.class);
      private final RestClient restClient;
      private final WeatherConfigProperties weatherProps;
 

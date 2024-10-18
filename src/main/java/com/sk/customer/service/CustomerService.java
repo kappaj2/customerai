@@ -14,10 +14,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomerService {
 
-     private final VectorStore vectorStore;
+     public final VectorStore vectorStore;
 
-     public void addCustomer(String customerName) {
-          var document = new Document(customerName, Map.of("customerId", 100L));
+     public void addTextDAta(String data) {
+          var document = new Document(data, Map.of("customerId", 100L));
           vectorStore.add(List.of(document));
      }
 }
