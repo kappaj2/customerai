@@ -1,6 +1,8 @@
 package com.sk.customer.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sk.customer.service.filehandling.DocWriterServiceInt;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
@@ -23,7 +25,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class JsonVectorStoreService {
+public class VectorStoreService implements DocWriterServiceInt {
 
      private static final int NUMBER_OF_TOKEN_PER_VECTOR = 350;
      private final VectorStore vectorStore;
@@ -31,6 +33,13 @@ public class JsonVectorStoreService {
      public void loadJsonIntoVectorStore(JsonNode jsonNode) {
           List<Document> documents = chunkJsonNode(jsonNode);
           vectorStore.add(documents);
+     }
+
+     @Override
+     public void persist(@NotNull List<Document> documents) {
+          log.info("{} documents passed for vector persistence", documents.size());
+          vectorStore.add(documents);
+          log.info("persisted successfully");
      }
 
      private List<Document> chunkJsonNode(JsonNode jsonNode) {
@@ -75,7 +84,7 @@ public class JsonVectorStoreService {
 
           //JsonReader jsonReader = new JsonReader(jsonResource, new CustomerMetadataGenerator(), "customer-id", "msisdn", "first-name", "last-name");
 
-           JsonReader jsonReader = new JsonReader(jsonResource, new CustomerMetadataGenerator());
+          JsonReader jsonReader = new JsonReader(jsonResource, new CustomerMetadataGenerator());
           var documentList = jsonReader.get();
           vectorStore.add(documentList);
      }
