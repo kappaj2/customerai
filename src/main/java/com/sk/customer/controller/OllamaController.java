@@ -1,138 +1,98 @@
 package com.sk.customer.controller;
 
 import com.sk.customer.advisor.SimpleLoggerAdvisor;
-import com.sk.customer.service.CustomerService;
-import jakarta.servlet.http.HttpSession;
+import com.sk.customer.dto.ChatRequest;
+import com.sk.customer.dto.ChatResponse;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.document.Document;
+import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
 
 @RestController
+@RequestMapping("/api/v1/ollama")
 public class OllamaController {
 
-     //@Value("classpath:images/AWS-Systems-Overview.png")
-     @Value("classpath:images/HoverCraftBeginning.png")
-     private Resource imageResource;
-
      private final ChatClient chatClient;
-     private final VectorStore vectorStore;
-     private final CustomerService customerService;
      private final ChatModel chatModel;
 
      public OllamaController(ChatClient.Builder builder,
                              VectorStore vectorStore,
-                             CustomerService customerService,
                              ChatModel chatModel) {
+
+          //https://spring.io/blog/2024/10/02/supercharging-your-ai-applications-with-spring-ai-advisors
+          var searchRequest = SearchRequest
+                  .defaults()
+                  .withTopK(1);
+
           this.chatClient = builder
-                  // .defaultSystem("You are a serious engineer talking to a super nerd")
-                  .defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
-                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+                  //.defaultSystem("You are an assistant that that helps customers to answer queries about our medical insurance products. Please provide as much information as possible based upon that data provided. If you cannot find any information, just say so. ")
+                  //.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
+                  //.defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
+                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore, searchRequest))
+                  .defaultOptions(ChatOptionsBuilder.builder().withTemperature(0.9).build())
                   .build();
-          this.vectorStore = vectorStore;
-          this.customerService = customerService;
           this.chatModel = chatModel;
      }
 
-     @GetMapping("/images")
-     public String analyzeImage() {
-          return chatClient.prompt()
-                  .user(userSpec -> userSpec.text("Please analyze the image and tell me what you see")
-                          .media(MimeTypeUtils.IMAGE_PNG, (org.springframework.core.io.Resource) imageResource))
-                  .call()
-                  .content();
-     }
-     /*
+     @GetMapping("/question")
+     public ChatResponse askPersonaQuestion(@RequestBody @NotNull ChatRequest chatRequest) {
 
-          Prompt with parameters
+          // Build a new chat client with a default system configuration.
+          // Exclude all the memory advisors, etc
+          var client = ChatClient.builder(chatModel)
+                  .defaultSystem("You are a friendly assistance that answers questions using the following persona: {persona}")
+                  .build();
 
-          public String jokeTemplate(@RequestParam(value = "topic", defaultValue = "dogs") String topic) {
-          return chatClient.prompt()
-                    .user(userSpec -> userSpec.text("Tell me a joke about {topic}"),
-                              .param("topic", topic))
-                    .call()
-                    .content();
-
-
-        Image processing:
-
-        @Value("classpath:/images/spring-logo.png")
-        private Resource imageResource;
-
-        public String analyzeImage() {
-          return chatClient.prompt()
-                    .user(userSpec -> userSpec.text("Tell me about the image"),
-                              .media(MimeTypeUtils.IMAGE_PNG, imageResource))
-                    .call()
-                    .content();
-      */
-
-     @GetMapping("/vector")
-     public List<Document> vector(@RequestParam String message) {
-          customerService.addCustomer(message);
-
-          return vectorStore.similaritySearch(message);
-     }
-
-     @GetMapping("/ollama/joke/template")
-     public String jokeTemplate(@RequestParam(value = "topic", defaultValue = "dogs") String topic) {
-
-          PromptTemplate promptTemplate = new PromptTemplate("Tell me a dad joke about topic {topic}");
-          Prompt prompt = promptTemplate.create(Map.of("topic", topic));
-
-          return chatClient.prompt(prompt)
+          var content = client.prompt()
+                  .system(sp -> sp.param("persona", chatRequest.getPersona()))
+                  .user(chatRequest.getQuestion())
                   .call()
                   .content();
 
+          return ChatResponse.builder()
+                  .conversationId(chatRequest.getConversationId())
+                  .responseContent(content)
+                  .build();
      }
 
-     @PostMapping("/ollama/chat")
-     public String ollamaChat(@RequestParam String message) {
+     @PostMapping("/question")
+     public ChatResponse askQuestion(@RequestBody @NotNull ChatRequest chatRequest) {
+          if (chatRequest.getConversationId() == null || chatRequest.getConversationId().isEmpty()) {
+               chatRequest.setConversationId(UUID.randomUUID().toString());
+          }
 
-          return chatClient.prompt()
-                  .user(message)
-                  .call()
-                  .content();
-     }
-
-     @GetMapping("/ollama/chat/stream")
-     public Flux<String> ollamaChatStream(@RequestParam String message) {
-
-          return chatClient.prompt()
-                  .user(message)
-                  .stream()
-                  .content();
-     }
-
-     @GetMapping("/ollama/question")
-     public String askQuestion(HttpSession session, @RequestParam String question) {
-
-          String prompt = "Answer the following question: " + question;
-          return chatClient.prompt()
+          // Here we can use the default ChatClient as that has the default advisor and other stuff configured.
+          var content = chatClient.prompt()
                   .advisors(advisorSpec -> {
-                       advisorSpec.params(Map.of("chat_memory_conversation_id", session.getId(), "chat_memory_response_size", "20"));
+                       advisorSpec.params(Map.of(CHAT_MEMORY_CONVERSATION_ID_KEY, chatRequest.getConversationId(),
+                               CHAT_MEMORY_RETRIEVE_SIZE_KEY, "20"));
                   })
                   .advisors(new SimpleLoggerAdvisor())
-                  .user(prompt)
+                  .user(chatRequest.getQuestion())
                   .call()
                   .content();
-
-
+          return ChatResponse.builder()
+                  .conversationId(chatRequest.getConversationId())
+                  .responseContent(content)
+                  .build();
      }
 }

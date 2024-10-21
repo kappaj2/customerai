@@ -62,7 +62,7 @@
 
         // Fetch streaming data from the server
         try {
-            const response = await fetchStreamWithRetry('/ollama/chat/stream?message=' + encodeURIComponent(message));
+            const response = await fetchStreamWithRetry('/api/v1/chat/stream?message=' + encodeURIComponent(message));
             const reader = response.body.getReader();
             let botMessageElement = addMessageToChat('Bot', '');
             let contentElement = botMessageElement.querySelector('.message-content');

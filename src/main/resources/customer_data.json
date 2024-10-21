@@ -1,0 +1,19 @@
+{
+  "msisdn": "27782014637",
+  "msisdn-verification-method": "USSD",
+  "first-name": "Aandre",
+  "last-name": "Kapp",
+  "gender": "MALE",
+  "email-address":"andre@gmail.com",
+  "date-of-birth": "1964/04/19",
+  "identification-number": "9904120000008",
+  "identification-id-type":"SA_ID",
+  "identification-id-country":"ZA",
+  "street-address": " 1 Spine Road  ",
+  "street-suburb": "Tristão",
+  "street-city": "Bloemfontein",
+  "street-province": "WESTERN CAPE",
+  "postal-code": "9230"
+}
+
+

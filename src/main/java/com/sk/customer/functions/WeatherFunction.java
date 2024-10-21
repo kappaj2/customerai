@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Description;
 import java.util.function.Function;
 
 @Configuration
-public class FunctionConfiguration {
+public class WeatherFunction {
 
      private final WeatherConfigProperties props;
 
-     public FunctionConfiguration(WeatherConfigProperties props) {
+     public WeatherFunction(WeatherConfigProperties props) {
           this.props = props;
      }
 
