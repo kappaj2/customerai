@@ -10,6 +10,8 @@ import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.prompt.ChatOptionsBuilder;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,11 +39,16 @@ public class OllamaController {
                              ChatModel chatModel) {
 
           //https://spring.io/blog/2024/10/02/supercharging-your-ai-applications-with-spring-ai-advisors
+          var searchRequest = SearchRequest
+                  .defaults()
+                  .withTopK(1);
+
           this.chatClient = builder
-                  .defaultSystem("You are an assistant that that helps customers to answer queries about our medical insurance products. Please provide as much information as possible based upon that data provided. If you cannot find any information, just say so. ")
-                  .defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
-                  .defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
-                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+                  //.defaultSystem("You are an assistant that that helps customers to answer queries about our medical insurance products. Please provide as much information as possible based upon that data provided. If you cannot find any information, just say so. ")
+                  //.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
+                  //.defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
+                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore, searchRequest))
+                  .defaultOptions(ChatOptionsBuilder.builder().withTemperature(0.9).build())
                   .build();
           this.chatModel = chatModel;
      }

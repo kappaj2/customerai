@@ -29,8 +29,8 @@ public class DocumentProcessManager {
           try {
                ReadResponse readResponse = documentReader.readFile(file);
 
-               String keywords = intelligentDocumentTransformer.keywordsEnricher(readResponse.documents(), keywordsCount);
-               //String keywords = "Testing";
+               //String keywords = intelligentDocumentTransformer.keywordsEnricher(readResponse.documents(), keywordsCount);
+               String keywords = "Testing";
 
                log.info("Extracted keywords - writing to vector store");
                // write to vector store
