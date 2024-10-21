@@ -16,8 +16,8 @@ public class CustomerService {
 
      public final VectorStore vectorStore;
 
-     public void addTextDAta(String data) {
-          var document = new Document(data, Map.of("customerId", 100L));
+     public void addTextData(String data) {
+          var document = new Document(data, Map.of("CustomerName", "Louis"));
           vectorStore.add(List.of(document));
      }
 }

@@ -53,7 +53,7 @@ spring:
         model: mxbai-embed-large
       chat:
         options:
-          model: dolphin-llama3:8b #llama3.2 #llava:7b # llama3.2
+          model: llama3.2 #dolphin-llama3:8b #llama3.2 #llava:7b # llama3.2
           temperature: 0.5
     vectorstore:
       pgvector:

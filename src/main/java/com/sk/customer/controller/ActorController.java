@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/actor")
+@RequestMapping("/api/v1/actor")
 public class ActorController {
 
      private final ChatClient chatClient;
@@ -21,6 +21,17 @@ public class ActorController {
      }
 
      record ActorFilms(String actor, List<String> films) {
+     }
+
+     @GetMapping("/films-raw")
+     public String getActorFilmsRaw(@RequestParam String actor) {
+
+          var promptTemplate = new PromptTemplate("Generate the filmography for the actor {actor}. Return the top 10 films.");
+          var prompt = promptTemplate.create(Map.of("actor", actor));
+
+          return chatClient.prompt(prompt)
+                  .call()
+                  .content();
      }
 
      @GetMapping("/films")

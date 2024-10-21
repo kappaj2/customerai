@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -45,15 +46,17 @@ public class VectorStoreController {
 
      @GetMapping("/add/text")
      public List<Document> vector(@RequestParam String message) {
-          customerService.addTextDAta(message);
-
+          customerService.addTextData(message);
           return vectorStore.similaritySearch(message);
      }
 
-     @GetMapping("/query")
-     public String getQueryResults(@RequestParam String query) {
-          return vectorStoreService.queryJSONVector(query).toString();//get(0).getContent();
-     }
+  @GetMapping("/query")
+  public String getQueryResults(@RequestParam String query) {
+       return vectorStoreService.queryJSONVector(query)
+               .stream()
+               .map(Document::getContent)
+               .collect(Collectors.joining("\n"));
+  }
 
      @PostMapping("/loadjson/object")
      public ResponseEntity<String> loadJsonData(@RequestBody String payload) {
