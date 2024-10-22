@@ -21,7 +21,7 @@ public class ChatController {
      public ChatController(ChatClient.Builder builder,
                            VectorStore vectorStore) {
           this.chatClient = builder
-                  .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
+          //        .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore))
                   .build();
      }
 
