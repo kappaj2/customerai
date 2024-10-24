@@ -33,7 +33,6 @@ public class OllamaController {
                              VectorStore vectorStore,
                              ChatModel chatModel) {
 
-          //https://spring.io/blog/2024/10/02/supercharging-your-ai-applications-with-spring-ai-advisors
           var searchRequest = SearchRequest
                   .defaults()
                   .withTopK(1);
@@ -43,7 +42,7 @@ public class OllamaController {
                   //.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
                   //.defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                   .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore, searchRequest))
-                  .defaultOptions(ChatOptionsBuilder.builder().withTemperature(0.9).build())
+                  .defaultOptions(ChatOptionsBuilder.builder().withTemperature(0.8).build())
                   .build();
           this.chatModel = chatModel;
      }

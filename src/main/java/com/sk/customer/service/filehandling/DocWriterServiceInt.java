@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface DocWriterServiceInt {
      void persist(List<Document> documents);
+     void delete(List<String> idList);
 }

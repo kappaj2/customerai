@@ -2,6 +2,8 @@ package com.sk.customer.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sk.customer.persistence.entity.VectorStoreEntity;
+import com.sk.customer.persistence.repository.VectorStoreRepository;
 import com.sk.customer.service.CustomerService;
 import com.sk.customer.service.VectorStoreService;
 import com.sk.customer.service.filehandling.DocumentProcessManager;
@@ -43,6 +45,7 @@ public class VectorStoreController {
      private final CustomerService customerService;
      private final VectorStore vectorStore;
      private final DocumentProcessManager documentProcessorManager;
+     private final VectorStoreRepository vectorStoreRepository;
 
      @GetMapping("/add/text")
      public List<Document> vector(@RequestParam String message) {
@@ -50,13 +53,13 @@ public class VectorStoreController {
           return vectorStore.similaritySearch(message);
      }
 
-  @GetMapping("/query")
-  public String getQueryResults(@RequestParam String query) {
-       return vectorStoreService.queryJSONVector(query)
-               .stream()
-               .map(Document::getContent)
-               .collect(Collectors.joining("\n"));
-  }
+     @GetMapping("/query")
+     public String getQueryResults(@RequestParam String query) {
+          return vectorStoreService.queryJSONVector(query)
+                  .stream()
+                  .map(Document::getContent)
+                  .collect(Collectors.joining("\n"));
+     }
 
      @PostMapping("/loadjson/object")
      public ResponseEntity<String> loadJsonData(@RequestBody String payload) {
@@ -86,5 +89,10 @@ public class VectorStoreController {
           Files.write(path, bytes);
 
           return ResponseEntity.ok(documentProcessorManager.process(file, keywordsCount));
+     }
+
+     @GetMapping("/jpa")
+     public List<VectorStoreEntity> getVectorStoreData() {
+          return vectorStoreRepository.findAll();
      }
 }
