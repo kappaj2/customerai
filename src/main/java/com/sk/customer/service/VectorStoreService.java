@@ -36,6 +36,11 @@ public class VectorStoreService implements DocWriterServiceInt {
      }
 
      @Override
+     public void delete(@NotNull List<String> idList) {
+          vectorStore.delete(idList);
+     }
+
+     @Override
      public void persist(@NotNull List<Document> documents) {
           log.info("{} documents passed for vector persistence", documents.size());
           vectorStore.add(documents);

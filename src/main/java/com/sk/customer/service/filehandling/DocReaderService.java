@@ -39,10 +39,13 @@ public class DocReaderService implements DocReaderServiceInt {
           // based on the file type we will use the corresponding Document Reader from Spring AI
           Class<? extends DocumentReader> correspondingDocumentReader = FileHandlingUtils.getCorrespondingDocumentReader(file);
 
+          Path path = Paths.get("/tmp/" + file.getOriginalFilename());
+          var url = path.toFile().toURI().toURL();
+
           // dynamic reader
-//          DocumentReader documentReader = correspondingDocumentReader
-//                  .getDeclaredConstructor(String.class)
-//                  .newInstance("//tmp/"+file.getOriginalFilename());
+          DocumentReader documentReader = correspondingDocumentReader
+                  .getDeclaredConstructor(String.class)
+                  .newInstance(url.toString());
 
 
           //          // Dedicated reader gives more capabilities/options
@@ -50,12 +53,9 @@ public class DocReaderService implements DocReaderServiceInt {
                   .withPagesPerDocument(1)
                   .build();
 
-          Path path = Paths.get("/tmp/" + file.getOriginalFilename());
-
-
-          PagePdfDocumentReader reader = new PagePdfDocumentReader(path.toUri().toString(), config);
+          // PagePdfDocumentReader documentReader = new PagePdfDocumentReader(path.toUri().toString(), config);
           TokenTextSplitter splitter = new TokenTextSplitter();
-          List<Document> split = splitter.split(reader.read());
+          List<Document> split = splitter.split(documentReader.read());
 
 
           //var documents = documentReader.read();
