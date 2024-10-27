@@ -75,3 +75,7 @@ logging:
 weather:
   api-key: ${WEATHER_API_KEY}
   api-url: https://api.weatherapi.com/v1
+
+customer:
+  api:
+    url: ${CUSTOMER_API_URL}
