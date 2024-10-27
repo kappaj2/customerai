@@ -92,6 +92,22 @@ docker run -d --name postgres -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES
 Configure the PGVector DB indexes:
 [PGVector details](https://tembo.io/blog/vector-indexes-in-pgvector)
 
+We also have a JPA entity that maps onto the vector table. So run the following to initialize the table so JPA is happy.
+```sql
+create table public.vector_store
+(
+    id        uuid default uuid_generate_v4() not null primary key,
+    content   text,
+    metadata  json,
+    embedding vector(1024)
+);
+
+alter table public.vector_store
+    owner to customerai;
+
+create index spring_ai_vector_index
+    on public.vector_store using hnsw (embedding public.vector_cosine_ops);
+```
 ### Configure customerai user in PostgreSQL
 For this we are simply using local PostgreSQL instance, so not using encrypted passwords and fancy stuff.
 <br>The following commands will sort out datasource for us:
