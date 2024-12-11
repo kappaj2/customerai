@@ -35,10 +35,10 @@ public class OllamaController {
 
           var searchRequest = SearchRequest
                   .defaults()
-                  .withTopK(1);
+                  .withTopK(5);
 
           this.chatClient = builder
-                  //.defaultSystem("You are an assistant that that helps customers to answer queries about our medical insurance products. Please provide as much information as possible based upon that data provided. If you cannot find any information, just say so. ")
+                  .defaultSystem("You are an assistant that helps customers to answer queries about their registration data. The customer data is in the format of raw JSON payloads, so you need to extract the node and value properties to look at the available data. If you cannot find any information, just say so. ")
                   //.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
                   //.defaultAdvisors(new PromptChatMemoryAdvisor(new InMemoryChatMemory()))
                   .defaultAdvisors(new QuestionAnswerAdvisor(vectorStore, searchRequest))

@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,7 +127,11 @@ public class VectorStoreService implements DocWriterServiceInt {
      public class CustomerMetadataGenerator implements JsonMetadataGenerator {
           @Override
           public Map<String, Object> generate(Map<String, Object> jsonMap) {
-               Map<String, Object> objectMap = Map.of("msisdn", jsonMap.get("msisdn"),
+
+               var contactNumber = jsonMap.get("customer-contact-numbers");
+
+
+               Map<String, Object> objectMap = Map.of(
                        "first-name", jsonMap.get("first-name"),
                        "last-name", jsonMap.get("last-name"));
                return objectMap;
