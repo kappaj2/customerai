@@ -76,11 +76,11 @@ public class OllamaController {
 
           // Here we can use the default ChatClient as that has the default advisor and other stuff configured.
           var content = chatClient.prompt()
-                  .advisors(advisorSpec -> {
-                       advisorSpec.params(Map.of(CHAT_MEMORY_CONVERSATION_ID_KEY, chatRequest.getConversationId(),
-                               CHAT_MEMORY_RETRIEVE_SIZE_KEY, "20"));
-                  })
-                  .advisors(new SimpleLoggerAdvisor())
+//                  .advisors(advisorSpec -> {
+//                       advisorSpec.params(Map.of(CHAT_MEMORY_CONVERSATION_ID_KEY, chatRequest.getConversationId(),
+//                               CHAT_MEMORY_RETRIEVE_SIZE_KEY, "20"));
+//                  })
+//                  .advisors(new SimpleLoggerAdvisor())
                   .user(chatRequest.getQuestion())
                   .call()
                   .content();

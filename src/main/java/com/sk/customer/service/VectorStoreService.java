@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +84,13 @@ public class VectorStoreService implements DocWriterServiceInt {
      /*
       * Need to unpack this further. Looks like if we don't specify the keys to use, then it will use the whole doc - sort of what we want.
       * https://docs.spring.io/spring-ai/reference/api/etl-pipeline.html
+      */
+
+     /**
+      * This method is used by the SQS Listener to upload customer data to the vector store.
+      *
+      * @param jsonResource
+      * @throws FileNotFoundException
       */
      public void addCustomerData(Resource jsonResource) throws FileNotFoundException {
 
