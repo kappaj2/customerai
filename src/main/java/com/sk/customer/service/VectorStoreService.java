@@ -114,9 +114,10 @@ public class VectorStoreService implements DocWriterServiceInt {
 
      public List<Document> queryJSONVector(String query) {
           List<Document> results = vectorStore.similaritySearch(
-                  SearchRequest.defaults()
-                          .withQuery(query)
-                          .withTopK(2)
+                  SearchRequest.builder()
+                          .query(query)
+                          .topK(2)
+                          .build()
           );
           return results;
      }

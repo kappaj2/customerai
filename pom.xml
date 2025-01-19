@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>23</java.version>
-        <spring-ai.version>1.0.0-M3</spring-ai.version>
+        <spring-ai.version>1.0.0-M5</spring-ai.version>
         <org.projectlombok.version>1.18.30</org.projectlombok.version>
         <maven.compiler.proc>full</maven.compiler.proc>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>

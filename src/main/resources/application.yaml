@@ -53,7 +53,7 @@ spring:
         model: mxbai-embed-large
       chat:
         options:
-          model: dolphin-llama3 #llama3.2 #llava:7b # llama3.2
+          model: llava:7b #ZimaBlueAI/MiniCPM-o-2_6 #llava:7b # llama3.2 #dolphin-llama3 #
           temperature: 0.5
     vectorstore:
       pgvector:
@@ -71,6 +71,7 @@ application:
 logging:
   level:
     com.sk.customer: DEBUG
+    org.springframework.ai: DEBUG
 
 weather:
   api-key: ${WEATHER_API_KEY}

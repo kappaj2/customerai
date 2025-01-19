@@ -40,10 +40,24 @@ public class CustomerRegistrationListener implements ListenerService {
                switch (eventType) {
                     case CustomerManagementEventType.CUSTOMER_CREATION -> {
                          log.info("Received new customer registration event");
-                         JsonNode node = objectMapper.valueToTree(sqsListenerDTO.getPayload());
 
-                         var resource = convertJsonNodeToResource(node);
-                         vectorStoreService.addCustomerData(resource);
+                         CustomerUpdatedDTO customerUpdatedDTO = objectMapper.convertValue(sqsListenerDTO.getPayload(), CustomerUpdatedDTO.class);
+
+                         var paragraph = customerParagraphBuilder.generateCustomerParagraph(customerUpdatedDTO);
+
+                         Map<String, Object> metadata =
+                                 Map.of("mm-global-customer-id", customerUpdatedDTO.getMmGlobalCustomerId(),
+                                         "msisdn", customerUpdatedDTO.getCustomerContactNumberDTOList().get(0).getContactNumber(),
+                                         "customer-event-type", sqsListenerDTO.getCustomerManagementEventType());
+
+                         List<Document> documentList = List.of(new Document(paragraph, metadata));
+
+                         vectorStoreService.persist(documentList);
+
+//                         JsonNode node = objectMapper.valueToTree(sqsListenerDTO.getPayload());
+//
+//                         var resource = convertJsonNodeToResource(node);
+//                         vectorStoreService.addCustomerData(resource);
                     }
 
                     case CustomerManagementEventType.CUSTOMER_UPDATE -> {
@@ -55,7 +69,9 @@ public class CustomerRegistrationListener implements ListenerService {
 
                          Map<String, Object> metadata =
                                  Map.of("mm-global-customer-id", customerUpdatedDTO.getMmGlobalCustomerId(),
-                                         "msisdn", customerUpdatedDTO.getCustomerContactNumberDTOList().get(0).getContactNumber());
+                                         "msisdn", customerUpdatedDTO.getCustomerContactNumberDTOList().get(0).getContactNumber(),
+                                         "customer-event-type", sqsListenerDTO.getCustomerManagementEventType());
+
                          List<Document> documentList = List.of(new Document(paragraph, metadata));
 
                          vectorStoreService.persist(documentList);

@@ -1,7 +1,6 @@
 package com.sk.customer.messaging.sqslisteners;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import za.co.mamamoney.customer.dto.CustomerUpdatedDTO;
 
@@ -13,6 +12,7 @@ import java.util.Map;
 public class CustomerParagraphBuilder {
 
      public String generateCustomerParagraph(CustomerUpdatedDTO customer) {
+
           // Create a map of placeholders
           Map<String, String> placeholders = new HashMap<>();
 
@@ -21,10 +21,14 @@ public class CustomerParagraphBuilder {
           placeholders.put("gender", customer.getGender().toLowerCase());
           placeholders.put("firstName", customer.getFirstName());
           placeholders.put("lastName", customer.getLastName());
-          placeholders.put("dateOfBirth", customer.getDateOfBirth().toString());
+          if (customer.getDateOfBirth() != null) {
+               placeholders.put("dateOfBirth", customer.getDateOfBirth().toString());
+          }
           placeholders.put("preferredLanguage", customer.getPreferredLanguage());
           placeholders.put("status", customer.getStatus().toLowerCase());
-          placeholders.put("activationDate", customer.getActivationDate().toString());
+          if (customer.getActivationDate() != null) {
+               placeholders.put("activationDate", customer.getActivationDate().toString());
+          }
           placeholders.put("inboundChannel", customer.getInboundChannel());
           placeholders.put("product", customer.getProduct());
           placeholders.put("brand", customer.getBrand());
@@ -40,7 +44,7 @@ public class CustomerParagraphBuilder {
                placeholders.put("city", address.getCity());
                placeholders.put("province", address.getProvince().name());
                placeholders.put("postalCode", address.getPostalCode());
-               paragraph = paragraph.replace("{addressDetails}",ADDRESS_TEMPLATE);
+               paragraph = paragraph.replace("{addressDetails}", ADDRESS_TEMPLATE);
           } else {
                paragraph = paragraph.replace("{addressDetails}", "");
           }
@@ -49,7 +53,7 @@ public class CustomerParagraphBuilder {
           if (customer.getCustomerContactNumberDTOList() != null && !customer.getCustomerContactNumberDTOList().isEmpty()) {
                var contact = customer.getCustomerContactNumberDTOList().get(0);
                placeholders.put("contactNumber", contact.getContactNumber());
-               paragraph = paragraph.replace("{contactDetails}",CONTACT_TEMPLATE);
+               paragraph = paragraph.replace("{contactDetails}", CONTACT_TEMPLATE);
           } else {
                paragraph = paragraph.replace("{contactDetails}", "");
           }
@@ -60,15 +64,18 @@ public class CustomerParagraphBuilder {
                placeholders.put("identificationNumber", idNumber.getIdentificationNumber());
                placeholders.put("identificationNumberType", idNumber.getIdentificationNumberTypeCode().name());
                placeholders.put("countryCode", idNumber.getIdentificationNumberCountryCode());
-               paragraph = paragraph.replace("{identificationDetails}",IDENTIFICATION_TEMPLATE);
+               paragraph = paragraph.replace("{identificationDetails}", IDENTIFICATION_TEMPLATE);
           } else {
                paragraph = paragraph.replace("{identificationDetails}", "");
           }
 
           // Replace all placeholders
           for (Map.Entry<String, String> entry : placeholders.entrySet()) {
-               paragraph = paragraph.replace("{" + entry.getKey() + "}", entry.getValue());
+               if (entry.getKey() != null && entry.getValue() != null){
+                    paragraph = paragraph.replace("{" + entry.getKey() + "}", entry.getValue());
+               }
           }
+          
 
           log.debug("Build document with string : [doc: {}]", paragraph);
           return paragraph;

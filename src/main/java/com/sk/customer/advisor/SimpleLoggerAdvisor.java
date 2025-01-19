@@ -34,9 +34,9 @@ public class SimpleLoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvis
 
      @Override
      public Flux<AdvisedResponse> aroundStream(AdvisedRequest advisedRequest, StreamAroundAdvisorChain chain) {
-          log.debug("BEFORE: {}", advisedRequest);
+          log.debug("Flux BEFORE: {}", advisedRequest);
           Flux<AdvisedResponse> advisedResponses = chain.nextAroundStream(advisedRequest);
           return new MessageAggregator().aggregateAdvisedResponse(advisedResponses,
-                  advisedResponse -> log.debug("AFTER: {}", advisedResponse));
+                  advisedResponse -> log.debug("Flux AFTER: {}", advisedResponse));
      }
 }
