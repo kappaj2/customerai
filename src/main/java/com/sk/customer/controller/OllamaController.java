@@ -155,8 +155,10 @@ public class OllamaController {
      @PostMapping("/question3")
      public Answer getAnswer(@RequestBody @NotNull ChatRequest chatRequest) {
 
-          String queryText = "Customer profile with mobile number " + "27782014637" +
-                  " including their service history and account details";
+          String queryText = "";
+
+//           queryText = "Customer profile with mobile number " + "27782014637" +
+//                  " including their service history and account details";
 
           /*
                Supported filter operators include:
@@ -183,6 +185,21 @@ public class OllamaController {
           org.springframework.ai.chat.model.ChatResponse response = chatModel.call(prompt);
 
           return new Answer(response.getResult().getOutput().getContent());
+          /*
+              private Message generateSystemMessage(String message) {
+        LOGGER.info("Retrieving documents");
+        List<Document> similarDocuments = vectorStore.similaritySearch(SearchRequest.query(message)
+                .withTopK(2).withSimilarityThreshold(0.75));
+        LOGGER.info("Found {} similar documents", similarDocuments.size());
+        SystemPromptTemplate systemPromptTemplate = new SystemPromptTemplate(this.systemPromptResource);
+        if(similarDocuments.isEmpty()) {
+            SystemPromptTemplate emptyMessageTemplate = new SystemPromptTemplate("HERE YOU SHOULD INCLUDE THE NEW TEMPLATE");
+            return emptyMessageTemplate.createMessage(Map.of("message", "No information found"));
+        }
+        String documentContent = similarDocuments.stream().map(Document::getContent).collect(Collectors.joining("\n"));
+        return systemPromptTemplate.createMessage(Map.of("documents", documentContent));
+    }
+           */
      }
 
      public record Answer(String answer) {
